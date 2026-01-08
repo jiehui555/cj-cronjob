@@ -1,4 +1,5 @@
 import logging
+import os
 from playwright import sync_api
 
 from src import config, now
@@ -35,18 +36,23 @@ def run() -> int:
             logging.info(f'开始处理报表：{report["name"]} - {url}')
 
             # 根据报表名称选择对应的处理方式
-            # if report["name"] == "今日新单报表":
-            #     img_paths.append(handle_today_new_order_report(page, url))
-            # else:
-            #     pass
+            if report["name"] == "今日新单报表":
+                img_paths.append(handle_today_new_order_report(page, url))
+            else:
+                pass
+
+        print(img_paths)
     return 1
 
 
 def handle_today_new_order_report(page: sync_api.Page, url: str) -> str:
     """ 截取「今日新单报表」 """
+
+    # 访问数据表格页
     page.goto(url, wait_until="networkidle", timeout=60_000)
     page.wait_for_selector("#table", state="visible", timeout=5_000)
 
+    # 截取所需数据
     img_path = f"今日新单报表_{now().strftime('%Y-%m-%d')}.png"
     page.locator("#table").screenshot(path=img_path)
 
