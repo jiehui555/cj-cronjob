@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+import os
 from zoneinfo import ZoneInfo
 
 from dotenv import load_dotenv
@@ -17,6 +18,11 @@ load_dotenv()
 logging.Formatter.converter = lambda *args: now().timetuple()
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format='%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
+
+# 清除 png 文件（残余图片）
+for file in os.listdir():
+    if file.lower().endswith(('.png', '.zip')):
+        os.remove(file)

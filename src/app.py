@@ -1,5 +1,6 @@
 import logging
 import os
+import zipfile
 from PIL import Image
 from playwright import sync_api
 
@@ -7,6 +8,7 @@ from src import config, now
 
 
 def run() -> int:
+    img_paths = []
     with sync_api.sync_playwright() as pw:
         # 打开网页
         browser = pw.chromium.launch(headless=True)
@@ -31,23 +33,33 @@ def run() -> int:
         logging.info('已成功登录后台')
 
         # 处理报表截图
-        img_paths = []
         for report in config.reports:
             url = f'{config.base_url}/utl/{report["page"]}/{report["page"]}.php'
             logging.info(f'开始处理报表：{report["name"]} - {url}')
 
             # 根据报表名称选择对应的处理方式
             if report["name"] == "今日新单报表":
-                # img_paths.append(handle_today_new_order_report(page, url))
-                pass
+                img_path = handle_today_new_order_report(page, url)
             elif report["name"] == "延期出货明细表":
-                # img_paths.append(handle_delay_shipment_report(page, url))
-                pass
+                img_path = handle_delay_shipment_report(page, url)
             else:
-                img_paths.append(handle_shipment_report(
-                    page, url, report["name"], report.get("has_tail", False)))
+                img_path = handle_shipment_report(
+                    page, url, report["name"], report.get("has_tail", False))
 
-        print(img_paths)
+            img_paths.append(img_path)
+            logging.info(f'已完成截图：{img_path}')
+
+    # 打包图片
+    zip_path = f"每日截图-打包-{now().strftime('%Y-%m-%d')}.zip"
+    with zipfile.ZipFile(zip_path, 'w', compression=zipfile.ZIP_DEFLATED) as zipf:
+        for result_img_path in img_paths:
+            if os.path.exists(result_img_path):  # 可选：检查文件是否存在
+                filename = os.path.basename(result_img_path)  # 只取文件名
+                zipf.write(result_img_path, arcname=filename)
+            else:
+                logging.warning(f"文件不存在，跳过 {result_img_path}")
+    logging.info(f'已打包图片：{zip_path}')
+
     return 1
 
 
@@ -270,11 +282,11 @@ def handle_shipment_report(page: sync_api.Page, url: str, report: str, has_tail:
     logging.info(f"需要合并的图片：{img_paths}")
 
     # 合并图片
-    img_path = merge_images(img_paths, report)
+    full_img_path = merge_images(img_paths, report)
     logging.info(f"图片合并完成，保存路径: {img_path}")
 
     # 删除「局部截图」的图片
     for img_path in img_paths:
         os.remove(img_path)
 
-    return img_path
+    return full_img_path
