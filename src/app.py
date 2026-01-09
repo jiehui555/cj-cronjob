@@ -65,4 +65,4 @@ def run() -> int:
     send_email(zip_path, img_paths)
     logging.info('已发送邮件')
 
-    return 1
+    return 0
