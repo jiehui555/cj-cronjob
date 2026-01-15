@@ -28,10 +28,10 @@ DB_MES_MYSQL_NAME = os.getenv("DB_MES_MYSQL_NAME", "unknown")
 
 # 需要截图的报表
 SCREENSHOT_REPORTS = [
-    # {
-    #     "name": "今日新单报表",
-    #     "page": 208,
-    # },
+    {
+        "name": "今日新单报表",
+        "page": 208,
+    },
     {
         "name": "延期出货明细表",
         "page": 220,
@@ -41,24 +41,24 @@ SCREENSHOT_REPORTS = [
         "page": 210,
         "has_tail": False,
     },
-    # {
-    #     "name": "技果出货报表",
-    #     "page": 207,
-    #     "has_tail": False,
-    # },
-    # {
-    #     "name": "迅成出货报表",
-    #     "page": 206,
-    #     "has_tail": False,
-    # },
-    # {
-    #     "name": "金安出货报表",
-    #     "page": 212,
-    #     "has_tail": False,
-    # },
-    # {
-    #     "name": "长嘉出货报表",
-    #     "page": 205,
-    #     "has_tail": True,
-    # },
+    {
+        "name": "技果出货报表",
+        "page": 207,
+        "has_tail": False,
+    },
+    {
+        "name": "迅成出货报表",
+        "page": 206,
+        "has_tail": False,
+    },
+    {
+        "name": "金安出货报表",
+        "page": 212,
+        "has_tail": False,
+    },
+    {
+        "name": "长嘉出货报表",
+        "page": 205,
+        "has_tail": True,
+    },
 ]
