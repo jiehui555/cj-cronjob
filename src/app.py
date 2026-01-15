@@ -1,7 +1,7 @@
 import argparse
 import sys
 from src.jobs.it_screenshot_job import run_it_screenshot_job
-from src.jobs.mes2plus_reimport_sn import run_mes2plus_reimport_sn_job
+# from src.jobs.mes2plus_reimport_sn import run_mes2plus_reimport_sn_job
 from src.jobs.scheduler import run_scheduler
 
 
@@ -11,15 +11,16 @@ def get_jobs_info():
         {
             "name": "it-screenshot",
             "description": "IT-截图任务",
-            "schedule": "08:00",
+            "schedule": "08:30",
             "function": run_it_screenshot_job,
         },
-        {
-            "name": "mes2plus-reimport-sn",
-            "description": "MES2Plus-重新导入序列号",
-            "schedule": "10:00",
-            "function": run_mes2plus_reimport_sn_job,
-        },
+        # todo 暂时不启用
+        # {
+        #     "name": "mes2plus-reimport-sn",
+        #     "description": "MES2Plus-重新导入序列号",
+        #     "schedule": "10:00",
+        #     "function": run_mes2plus_reimport_sn_job,
+        # },
     ]
 
 
