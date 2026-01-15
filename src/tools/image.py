@@ -1,9 +1,13 @@
-from typing import List
+import os
+from typing import List, Optional
 from PIL import Image
 
 
 def merge_images(
-    img_paths: List[str], output_name: str, background: tuple = (255, 255, 255)
+    img_paths: List[str],
+    output_name: str,
+    background: tuple = (255, 255, 255),
+    output_dir: Optional[str] = None,
 ) -> str:
     """
     Merge multiple images vertically (stack them on top of each other)
@@ -12,6 +16,7 @@ def merge_images(
         img_paths: List of image file paths to merge
         output_name: Name for the output file (without extension)
         background: Background color as RGB tuple, defaults to white
+        output_dir: Directory to save the output file, defaults to current directory
 
     Returns:
         Path to the merged image file
@@ -37,8 +42,13 @@ def merge_images(
         new_img.paste(img, (x_offset, y_offset))
         y_offset += img.height
 
-    # Save
-    save_path = f"{output_name}.png"
+    # Create output directory if needed
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
+        save_path = os.path.join(output_dir, f"{output_name}.png")
+    else:
+        save_path = f"{output_name}.png"
+
     new_img.save(save_path, quality=95)
 
     return save_path

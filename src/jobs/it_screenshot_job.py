@@ -1,4 +1,5 @@
 import os
+import shutil
 import zipfile
 from playwright import sync_api
 
@@ -9,6 +10,9 @@ from src.tools.logger import get_logger
 
 logger = get_logger(__name__)
 
+# 临时文件目录
+TEMP_DIR = "tmp/output/it-screenshot"
+
 
 def handle_today_new_order_report(page: sync_api.Page, url: str) -> str:
     """截取「今日新单报表」"""
@@ -16,7 +20,7 @@ def handle_today_new_order_report(page: sync_api.Page, url: str) -> str:
     page.wait_for_selector("#table", state="visible", timeout=5_000)
     logger.info("已加载数据表格页")
 
-    img_path = f"今日新单报表_{now().strftime('%Y-%m-%d')}.png"
+    img_path = os.path.join(TEMP_DIR, f"今日新单报表_{now().strftime('%Y-%m-%d')}.png")
     page.locator("#table").screenshot(path=img_path)
     logger.info(f"已截取数据表格页：{img_path}")
 
@@ -32,7 +36,9 @@ def handle_delay_shipment_report(page: sync_api.Page, url: str) -> str:
     page.locator("#header").evaluate("el => el.style.display = 'none'")
     logger.info("已隐藏顶部表单")
 
-    img_path = f"延期出货明细表_{now().strftime('%Y-%m-%d')}.png"
+    img_path = os.path.join(
+        TEMP_DIR, f"延期出货明细表_{now().strftime('%Y-%m-%d')}.png"
+    )
     page.locator("#table").screenshot(path=img_path)
     logger.info(f"已截取数据表格页：{img_path}")
 
@@ -83,20 +89,20 @@ def handle_shipment_report(
     img_paths = []
 
     # 表头
-    img_path = f"{report}_局部截图-表头.png"
+    img_path = os.path.join(TEMP_DIR, f"{report}_局部截图-表头.png")
     page.locator("thead").screenshot(path=img_path)
     img_paths.append(img_path)
     logger.info(f"已截取表头：{img_path}")
 
     # 延期出货
-    img_path = f"{report}_局部截图-延期出货.png"
+    img_path = os.path.join(TEMP_DIR, f"{report}_局部截图-延期出货.png")
     page.locator('tbody[data-type="延期出货"]').screenshot(path=img_path)
     img_paths.append(img_path)
     logger.info(f"已截取延期出货：{img_path}")
 
     # 货尾
     if has_tail:
-        img_path = f"{report}_局部截图-货尾.png"
+        img_path = os.path.join(TEMP_DIR, f"{report}_局部截图-货尾.png")
         page.locator('tbody[data-type="货尾"]').screenshot(path=img_path)
         img_paths.append(img_path)
         logger.info(f"已截取货尾：{img_path}")
@@ -107,7 +113,7 @@ def handle_shipment_report(
         if page.locator(css_locator).count() == 0:
             append_blank_month_tbody(page.locator("table"), i)
             logger.info(f"添加空白的 {i} 月数据")
-        img_path = f"{report}_局部截图-{i} 月.png"
+        img_path = os.path.join(TEMP_DIR, f"{report}_局部截图-{i} 月.png")
         page.locator(css_locator).screenshot(path=img_path)
         img_paths.append(img_path)
         logger.info(f"已截取 {i} 月数据：{img_path}")
@@ -127,7 +133,7 @@ def handle_shipment_report(
             if page.locator(css_locator).count() == 0:
                 append_blank_month_tbody(page.locator("table"), i)
                 logger.info(f"添加空白的 {i} 月数据")
-            img_path = f"{report}_局部截图-{i} 月.png"
+            img_path = os.path.join(TEMP_DIR, f"{report}_局部截图-{i} 月.png")
             page.locator(css_locator).screenshot(path=img_path)
             img_paths.append(img_path)
 
@@ -139,16 +145,21 @@ def handle_shipment_report(
     else:
         months = [2, 1, 12]
 
-    merge_order = [f"{report}_局部截图-表头.png", f"{report}_局部截图-延期出货.png"]
+    merge_order = [
+        os.path.join(TEMP_DIR, f"{report}_局部截图-表头.png"),
+        os.path.join(TEMP_DIR, f"{report}_局部截图-延期出货.png"),
+    ]
     if has_tail:
-        merge_order.append(f"{report}_局部截图-货尾.png")
-    merge_order += [f"{report}_局部截图-{m} 月.png" for m in months]
+        merge_order.append(os.path.join(TEMP_DIR, f"{report}_局部截图-货尾.png"))
+    merge_order += [
+        os.path.join(TEMP_DIR, f"{report}_局部截图-{m} 月.png") for m in months
+    ]
 
     logger.info(f"需要合并的图片：{merge_order}")
 
     # 合并图片
     save_name = f"{report}_{now().strftime('%Y-%m-%d')}"
-    full_img_path = merge_images(merge_order, save_name)
+    full_img_path = merge_images(merge_order, save_name, output_dir=TEMP_DIR)
     logger.info(f"图片合并完成，保存路径: {full_img_path}")
 
     # 删除局部截图
@@ -162,6 +173,12 @@ def handle_shipment_report(
 def run_it_screenshot_job() -> int:
     """执行完整的截图任务"""
     img_paths = []
+
+    # 删除并重新创建临时目录
+    if os.path.exists(TEMP_DIR):
+        shutil.rmtree(TEMP_DIR)
+    os.makedirs(TEMP_DIR, exist_ok=True)
+    logger.info(f"已清理并创建临时目录: {TEMP_DIR}")
 
     with sync_api.sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
@@ -203,7 +220,7 @@ def run_it_screenshot_job() -> int:
             logger.info(f"已完成截图：{img_path}")
 
     # 打包图片
-    zip_path = f"每日截图-打包-{now().strftime('%Y-%m-%d')}.zip"
+    zip_path = os.path.join(TEMP_DIR, f"每日截图-打包-{now().strftime('%Y-%m-%d')}.zip")
     with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zipf:
         for result_img_path in img_paths:
             if os.path.exists(result_img_path):
