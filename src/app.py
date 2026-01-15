@@ -1,13 +1,15 @@
 import argparse
 import sys
 from src.jobs.it_screenshot_job import run_it_screenshot_job
+from src.jobs.mes2plus_reimport_sn import run_mes2plus_reimport_sn_job
 from src.jobs.scheduler import run_scheduler
 
 
-def run(job_name: str = "it-screenshot") -> int:
+def run(job_name: str) -> int:
     """运行指定任务"""
     jobs = {
         "it-screenshot": run_it_screenshot_job,
+        "mes2plus-reimport-sn": run_mes2plus_reimport_sn_job,
     }
 
     if job_name not in jobs:
@@ -21,7 +23,8 @@ def run(job_name: str = "it-screenshot") -> int:
 def run_schedule():
     """运行定时调度器"""
     jobs = [
-        ("截图任务", "08:00", run_it_screenshot_job),
+        ("IT-截图任务", "08:00", run_it_screenshot_job),
+        ("MES2Plus-重新导入序列号", "10:00", run_mes2plus_reimport_sn_job),
     ]
     run_scheduler(jobs, run_once_at_start=False)
 

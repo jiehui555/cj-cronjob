@@ -1,13 +1,8 @@
-from datetime import datetime
 import logging
-from zoneinfo import ZoneInfo
 
 from dotenv import load_dotenv
 
-
-def now():
-    """获取当前时间"""
-    return datetime.now(ZoneInfo("Asia/Shanghai"))
+from src.tools.clock import now
 
 
 # 加载环境变量
