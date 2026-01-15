@@ -56,7 +56,7 @@ def run_scheduler(
             execute_job(job_name, job_func)
 
     # 持续运行
-    logging.info("\n调度器运行中，等待定时任务...")
+    logging.info("调度器运行中，等待定时任务...")
     while True:
         schedule.run_pending()
         time.sleep(60)  # 每分钟检查一次
