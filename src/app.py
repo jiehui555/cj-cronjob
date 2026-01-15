@@ -4,7 +4,7 @@ import zipfile
 from playwright import sync_api
 
 from src import config, now
-from src.email import send_email
+from src.utils.email import send_report_email
 from src.screenshot import handle_today_new_order_report, handle_delay_shipment_report, handle_shipment_report
 
 
@@ -62,7 +62,14 @@ def run() -> int:
     logging.info(f'已打包图片：{zip_path}')
 
     # 发送邮件
-    send_email(zip_path, img_paths)
+    send_report_email(
+        smtp_host=config.smtp_host,
+        smtp_port=config.smtp_port,
+        smtp_from=config.smtp_from,
+        smtp_pass=config.smtp_pass,
+        to=config.smtp_to,
+        zip_path=zip_path,
+    )
     logging.info('已发送邮件')
 
     return 0

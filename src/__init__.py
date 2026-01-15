@@ -26,3 +26,4 @@ logging.basicConfig(
 for file in os.listdir():
     if file.lower().endswith(('.png', '.zip')):
         os.remove(file)
+
