@@ -8,8 +8,10 @@ docker build -t cj-cronjob:latest .
 
 ```bash
 REPO_HOST=ghcr.1ms.run
-docker pull "$REPO_HOST/jiehui555/cj-cronjob:latest"
+VERSION=v0.2.3
 
 cp .env.example .env
-docker run -d --env-file .env "$REPO_HOST/jiehui555/cj-cronjob:latest"
+
+docker pull "$REPO_HOST/jiehui555/cj-cronjob:$VERSION"
+docker run -d --env-file .env "$REPO_HOST/jiehui555/cj-cronjob:$VERSION"
 ```
