@@ -1,16 +1,16 @@
 import os
 
-base_url = os.getenv("BASE_URL", "unknown")
-bot_username = os.getenv("BOT_USERNAME", "unknown")
-bot_password = os.getenv("BOT_PASSWORD", "unknown")
+CJPLUS_URL = os.getenv("CJPLUS_URL", "unknown")
+CJPLUS_USERNAME = os.getenv("CJPLUS_USERNAME", "unknown")
+CJPLUS_PASSWORD = os.getenv("CJPLUS_PASSWORD", "unknown")
 
-smtp_host = os.getenv("SMTP_HOST", "smtp.qq.com")
-smtp_port = int(os.getenv("SMTP_PORT", "465"))
-smtp_pass = os.getenv("SMTP_PASS", "unknown")
-smtp_from = os.getenv("SMTP_FROM", "unknown")
-smtp_to = os.getenv("SMTP_TO", "unknown")
+EMAIL_SMTP_HOST = os.getenv("EMAIL_SMTP_HOST", "smtp.qq.com")
+EMAIL_SMTP_PORT = int(os.getenv("EMAIL_SMTP_PORT", "465"))
+EMAIL_SMTP_PASS = os.getenv("EMAIL_SMTP_PASS", "unknown")
+EMAIL_SMTP_FROM = os.getenv("EMAIL_SMTP_FROM", "unknown")
+EMAIL_SMTP_TO = os.getenv("EMAIL_SMTP_TO", "unknown")
 
-reports = [
+SCREENSHOT_REPORTS = [
     # {
     #     "name": "今日新单报表",
     #     "page": 208,

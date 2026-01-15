@@ -1,4 +1,3 @@
-import logging
 import os
 import zipfile
 from playwright import sync_api
@@ -6,25 +5,9 @@ from playwright import sync_api
 from src import config, now
 from src.tools.email import send_report_email
 from src.tools.image import merge_images
+from src.tools.logger import get_logger
 
-
-# 配置日志文件路径
-log_date = now().strftime("%Y-%m-%d")
-log_dir = f"tmp/logs/{log_date}"
-os.makedirs(log_dir, exist_ok=True)
-log_file = f"{log_dir}/it_screenshot_job.log"
-
-# 获取当前模块的logger并添加文件处理器
-logger = logging.getLogger(__name__)
-file_handler = logging.FileHandler(log_file, encoding="utf-8")
-file_handler.setFormatter(
-    logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-)
-logger.addHandler(file_handler)
-logger.setLevel(logging.INFO)
+logger = get_logger(__name__)
 
 
 def handle_today_new_order_report(page: sync_api.Page, url: str) -> str:
@@ -192,19 +175,19 @@ def run_it_screenshot_job() -> int:
         logger.info("已创建新页面")
 
         # 登录
-        page.goto(config.base_url, wait_until="networkidle", timeout=30_000)
+        page.goto(config.CJPLUS_URL, wait_until="networkidle", timeout=30_000)
         page.wait_for_selector('input[name="user"]', timeout=5_000)
         logger.info("已加载登录页面")
 
-        page.fill('input[name="user"]', config.bot_username)
-        page.fill('input[name="pass"]', config.bot_password)
+        page.fill('input[name="user"]', config.CJPLUS_USERNAME)
+        page.fill('input[name="pass"]', config.CJPLUS_PASSWORD)
         page.click('input[type="submit"]')
         page.wait_for_load_state("networkidle", timeout=30_000)
         logger.info("已成功登录后台")
 
         # 处理每个报表
-        for report in config.reports:
-            url = f'{config.base_url}/utl/{report["page"]}/{report["page"]}.php'
+        for report in config.SCREENSHOT_REPORTS:
+            url = f'{config.CJPLUS_URL}/utl/{report["page"]}/{report["page"]}.php'
             logger.info(f'开始处理报表：{report["name"]} - {url}')
 
             if report["name"] == "今日新单报表":
@@ -232,11 +215,11 @@ def run_it_screenshot_job() -> int:
 
     # 发送邮件
     send_report_email(
-        smtp_host=config.smtp_host,
-        smtp_port=config.smtp_port,
-        smtp_from=config.smtp_from,
-        smtp_pass=config.smtp_pass,
-        to=config.smtp_to,
+        smtp_host=config.EMAIL_SMTP_HOST,
+        smtp_port=config.EMAIL_SMTP_PORT,
+        smtp_from=config.EMAIL_SMTP_FROM,
+        smtp_pass=config.EMAIL_SMTP_PASS,
+        to=config.EMAIL_SMTP_TO,
         zip_path=zip_path,
     )
     logger.info("已发送邮件")
