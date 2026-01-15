@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.tools.mysql import get_mes_db
+from src.tools.db.mysql import get_mes_db
 from src.tools.logger import get_logger
 
 logger = get_logger(__name__)
