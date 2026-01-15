@@ -1,12 +1,33 @@
 # Scheduler Setup Guide
 
-This project supports two methods for automated daily execution at 8:00 AM:
+This project supports multiple methods for automated daily execution at 8:00 AM:
+
+## Project Structure
+```
+cj-auto-report/
+├── src/
+│   ├── cron/
+│   │   ├── __init__.py
+│   │   └── scheduler.py      # Python scheduler
+│   ├── utils/
+│   │   ├── email.py
+│   │   └── image.py
+│   ├── app.py
+│   └── config.py
+├── run.bat                    # Direct job execution
+├── scheduler.bat              # Python scheduler (Windows)
+└── main.py
+```
 
 ## Method 1: Python Schedule (Cross-platform)
 
 ### Run the scheduler:
 ```bash
-python scheduler.py
+# Windows
+scheduler.bat
+
+# Linux/Mac
+python -m src.cron.scheduler
 ```
 
 The scheduler will:
@@ -17,10 +38,10 @@ The scheduler will:
 ### To run in background:
 ```bash
 # Windows (use Task Manager or run as service)
-python scheduler.py &
+start /b python -m src.cron.scheduler
 
 # Linux/Mac (use nohup)
-nohup python scheduler.py &
+nohup python -m src.cron.scheduler &
 ```
 
 ## Method 2: Windows Task Scheduler (Recommended for Windows)
