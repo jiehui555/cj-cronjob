@@ -23,7 +23,7 @@ def run_schedule():
     jobs = [
         ("截图任务", "08:00", run_it_screenshot_job),
     ]
-    run_scheduler(jobs, run_once_at_start=True)
+    run_scheduler(jobs, run_once_at_start=False)
 
 
 def main():
@@ -33,7 +33,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 可用命令:
-  --run [任务名]    立即运行指定任务 (默认: it-screenshot)
+  --run [任务名]    立即运行指定任务 (例如: it-screenshot)
   --schedule        启动定时调度器 (每天 08:00 执行)
 
 示例:
@@ -42,12 +42,7 @@ def main():
         """,
     )
 
-    parser.add_argument(
-        "--run",
-        type=str,
-        default="it-screenshot",
-        help="指定要运行的任务名称 (默认: it-screenshot)",
-    )
+    parser.add_argument("--run", type=str, help="任务名称 (例如: it-screenshot)")
     parser.add_argument("--schedule", action="store_true", help="启动定时调度器")
 
     args = parser.parse_args()
