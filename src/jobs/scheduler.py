@@ -57,9 +57,12 @@ def run_scheduler(
 
     # 持续运行
     logging.info("调度器运行中，等待定时任务...")
-    while True:
-        try:
-            schedule.run_pending()
-        except Exception as e:
-            logging.error(f"调度器执行任务时发生异常: {e}", exc_info=True)
-        time.sleep(60)  # 每分钟检查一次
+    try:
+        while True:
+            try:
+                schedule.run_pending()
+            except Exception as e:
+                logging.error(f"调度器执行任务时发生异常: {e}", exc_info=True)
+            time.sleep(60)  # 每分钟检查一次
+    except KeyboardInterrupt:
+        logging.info("调度器已手动退出")
