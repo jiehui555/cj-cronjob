@@ -1,0 +1,7 @@
+services:
+  cj-cronjob:
+    image: ghcr.1ms.run/jiehui555/cj-cronjob:dev
+    volumes:
+      - ./.env:/app/.env
+      - ./tmp:/app/tmp
+    restart: unless-stopped
